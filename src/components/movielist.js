@@ -29,34 +29,31 @@ class MovieList extends Component {
     }
 
     render() {
-        const MovieListCarousel = ({movieList}) => {
-            if (!movieList) {
-                return <div>Loading....</div>
+        const MovieListCarousel = ({movielist}) => {
+            if (!movielist) { // evaluates to true if currentMovie is null
+                return <div>Loading...</div>;
             }
 
             return (
                 <Carousel onSelect={this.handleSelect}>
-                    {movieList.map((movie) =>
+                    {movielist.map((movie) =>
                         <Carousel.Item key={movie.Title}>
                             <div>
-                                <LinkContainer to={'movies/'+movie.Title} onClick={()=>this.handleClick(movie)}>
-                                    <Nav.Link><Image className="image" src={movie.imageUrl} thumbnail /></Nav.Link>
+                                <LinkContainer to={'/movie/'+movie.Title} onClick={()=>this.handleClick(movie)}>
+                                    <Image className="image" src={movie.ImageURL} thumbnail />
                                 </LinkContainer>
                             </div>
                             <Carousel.Caption>
                                 <h3>{movie.Title}</h3>
                                 <BsStarFill glyph={'star'} /> {movie.Ratings} &nbsp;&nbsp; {movie.Year}
                             </Carousel.Caption>
-                        </Carousel.Item>
-                    )}
-
-                </Carousel>
-            )
+                        </Carousel.Item>)}
+                </Carousel>);
         }
 
         return (
             <MovieListCarousel movieList={this.props.movies} />
-        )
+        );
     }
 }
 
