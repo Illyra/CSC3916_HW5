@@ -1,22 +1,63 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux'
+import React, { Component } from 'react';
 import { fetchMovie } from "../actions/movieActions";
-import MovieDetail from "../components/moviedetail"
+import {connect} from 'react-redux';
+import {Card, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { BsStarFill } from 'react-icons/bs'
+import { Image } from 'react-bootstrap';
 
-// support routing
+class MovieDetail extends Component {
 
-function Movie(props) {
-    const [selectedMovie] = useState(props.selectedMovie);
-    const params = useParams();
-    const movieTitle = params.movieTitle;
-    console.log(movieTitle);
-    const dispatch = useDispatch();
-    if (selectedMovie == null) {
-        dispatch(fetchMovie(movieTitle));
+    componentDidMount() {
+        const {dispatch} = this.props;
+        if (this.props.selectedMovie == null) {
+            dispatch(fetchMovie(this.props.movieId));
+        }
     }
 
-    return (<MovieDetail movieTitle={movieTitle} />)
+    render() {
+        const DetailInfo = () => {
+            if (!this.props.selectedMovie) {
+                return <div>Loading....</div>
+            }
+
+            return (
+                <Card>
+                    <Card.Header>Movie Detail</Card.Header>
+                    <Card.Body>
+                        <Image className="image" src={this.props.selectedMovie.imageUrl} thumbnail />
+                    </Card.Body>
+                    <ListGroup>
+                        <ListGroupItem>{this.props.selectedMovie.title}</ListGroupItem>
+                        <ListGroupItem>
+                            {this.props.selectedMovie.Actors.map((actor, i) =>
+                                <p key={i}>
+                                    <b>{actor.ActorName}</b> {actor.CharacterName}
+                                </p>)}
+                        </ListGroupItem>
+                        <ListGroupItem><h4><BsStarFill/> {this.props.selectedMovie.avgRating}</h4></ListGroupItem>
+                    </ListGroup>
+                    <Card.Body>
+                        {this.props.selectedMovie.reviews.map((review, i) =>
+                            <p key={i}>
+                                <b>{review.Name}</b>&nbsp; {review.Review}
+                                &nbsp;  <BsStarFill /> {review.Ratings}
+                            </p>
+                        )}
+                    </Card.Body>
+                </Card>
+            )
+        }
+
+        return (
+            <DetailInfo />
+        )
+    }
 }
 
-export default Movie;
+const mapStateToProps = state => {
+    return {
+        selectedMovie: state.movie.selectedMovie
+    }
+}
+
+export default connect(mapStateToProps)(MovieDetail);
